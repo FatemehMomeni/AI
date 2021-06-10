@@ -24,6 +24,8 @@ class A_star:
         self.position = self.agent_pos = position
         self.destination = goal_position
         self.map = mapp
+        frontier = list()
+        explored = list()
 
     def expand(self, pos):
         global first_time
@@ -73,7 +75,8 @@ class A_star:
                                     break
                             if flag:
                                 frontier.append([actions[act_key], pos, price, act_key])
-
+        print(self.destination)
+        print(frontier)
         minimum = frontier[0][2]
         for node in range(len(frontier)):
             if frontier[node][2] < minimum:
@@ -111,8 +114,8 @@ class A_star:
     def solution(self, pos):
         global dest_pos, dest_cost
         self.expand(pos)
-        for ex in range(len(explored)):
-            if explored[ex][0] == dest_pos:
-                path.index(0, explored[ex][2])
+        for ex in range(1,len(explored)):
+            #if explored[ex][0] == dest_pos:
+                path.insert(0, explored[ex][3])
                 dest_pos = explored[ex][1]
         return path, dest_cost
