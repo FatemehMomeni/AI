@@ -83,6 +83,8 @@ class A_star:
                 if frontier[frontier_index][0] == self.destination:
                     global dest_pos, dest_cost
                     dest_pos, dest_cost = frontier[frontier_index][0], frontier[frontier_index][2]
+                    explored.append(frontier[frontier_index])
+                    frontier.pop(frontier_index)
                     break
                 else:
                     explored.append(frontier[frontier_index])
