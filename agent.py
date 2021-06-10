@@ -33,9 +33,10 @@ class Agent(BaseAgent):
 
             for agent in turn_data.agent_data:
                 for base in range(len(bases_pos)):
-                    algorithm = A_star(self.grid_size, agent.position, bases_pos[base], turn_data.map)
-                    path, cost = algorithm.solution(agent.position)
-                    bases_cost.append([path, cost])
+                    for diamond in range(len(diamond_pos)):
+                        algorithm = A_star(self.grid_size,  diamond_pos[diamond], bases_pos[base], turn_data.map)
+                        path, cost = algorithm.solution(agent.position)
+                        bases_cost.append([path, cost])
             min_path = min(bases_cost, key=lambda t: t[1])
             result.append(min_path[0])
 
