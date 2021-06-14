@@ -1,4 +1,6 @@
 import operator
+import random
+
 from base import BaseAgent, TurnData, Action
 from tree import A_star
 import re
@@ -30,19 +32,26 @@ class Agent(BaseAgent):
                     algorithm = A_star(self.grid_size, agent.position, diamond_pos[diamond], turn_data.map)
                     path, cost = algorithm.solution(agent.position)
                     result = path
-
-            for agent in turn_data.agent_data:
-                for base in range(len(bases_pos)):
-                    for diamond in range(len(diamond_pos)):
-                        algorithm = A_star(self.grid_size,  diamond_pos[diamond], bases_pos[base], turn_data.map)
-                        path, cost = algorithm.solution(agent.position)
-                        bases_cost.append([path, cost])
+            for base in range(len(bases_pos)):
+                for diamond in range(len(diamond_pos)):
+                    algorithm = A_star(self.grid_size,  diamond_pos[diamond], bases_pos[base], turn_data.map)
+                    path, cost = algorithm.solution(diamond_pos[diamond])
+                    bases_cost.append([path, cost])
+            print("lk")
             min_path = min(bases_cost, key=lambda t: t[1])
-            result.append(min_path[0])
+            result.extend(min_path[0])
 
         current_act = result.pop(0)
-        return current_act
-
+        #print(type(current_act),current_act)
+        if current_act == "UP":
+            return Action.UP
+        elif current_act == "DOWN":
+            return Action.DOWN
+        elif current_act == "LEFT":
+            return Action.LEFT
+        elif current_act == "RIGHT":
+            return Action.RIGHT
+        #return random.choice(list(Action))
 
 if __name__ == '__main__':
     winner = Agent().play()
