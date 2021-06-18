@@ -8,7 +8,6 @@
 """
 from typing import Dict, Any
 
-frontier: Dict[Any, Any] = dict()
 explored: Dict[Any, Any] = dict()
 path = list()
 dest_pos = tuple()
@@ -22,7 +21,7 @@ class A_star:
         self.position = self.agent_pos = position
         self.destination = goal_position
         self.map = mapp
-        frontier.clear()
+        self.frontier : Dict[Any, Any] = dict()
         explored.clear()
         path.clear()
         self.first_time = True
@@ -44,7 +43,7 @@ class A_star:
         if self.first_time:
             price = self.f_n(None, 0, pos, self.destination)
             #frontier.append([pos, None, price, None])
-            frontier.update({pos :[pos,None, price, None]})
+            self.frontier.update({pos :[pos,None, price, None]})
             self.first_time = False
         else:
             if pos[0] == 0:
@@ -72,21 +71,21 @@ class A_star:
                         if not explored_flag:
                             price = self.f_n(pos, cost_parent, actions[act_key], self.destination)
                             #for node in range(len(frontier)):
-                            for f_pos in frontier:
+                            for f_pos in self.frontier:
                                 """if min_index == 0:
                                     minimum = frontier[node][2]
                                     min_index = 1"""
                                 #if frontier[node][0] == actions[act_key] and frontier[node][2] > price:
-                                if f_pos == actions.get(act_key) and frontier.get(f_pos)[2] > price:
+                                if f_pos == actions.get(act_key) and self.frontier.get(f_pos)[2] > price:
                                     """frontier[node][2] = price
                                     frontier[node][1] = pos
                                     frontier[node][3] = act_key"""
-                                    frontier.get(f_pos)[2] = price
-                                    frontier.get(f_pos)[1] = pos
-                                    frontier.get(f_pos)[3] = act_key
+                                    self.frontier.get(f_pos)[2] = price
+                                    self.frontier.get(f_pos)[1] = pos
+                                    self.frontier.get(f_pos)[3] = act_key
                                     flag = False
                                     break
-                            if flag:
+                            """if flag:
                                 if frontier:
                                     while True:
                                         pos_list = list(frontier)
@@ -95,9 +94,13 @@ class A_star:
                                         elif frontier.get(pos_list[add_frontier_index])[2] >= price:
                                             frontier = dict(sorted(frontier.items(), key=lambda e: e[1][2]))
                                         elif add_frontier_index == len(pos_list):
-                                            frontier.update({actions[act_key]:[actions[act_key],pos, price, act_key]})
+                                            frontier.update({actions[act_key]: [actions[act_key], pos, price, act_key]})
                                 else:
-                                    frontier.update({actions[act_key]: [actions[act_key], pos, price, act_key]})
+                                    frontier.update({actions[act_key]: [actions[act_key], pos, price, act_key]})"""
+                            if flag:
+                                self.frontier.update({actions[act_key]: [actions[act_key], pos, price, act_key]})
+
+        self.frontier = dict(sorted(self.frontier.items(), key=lambda e: e[1][2]))
         """pos_list = list(frontier)
         self.minimum = frontier.get(pos_list[0])[2]
         pos_list = list(frontier)
@@ -110,41 +113,43 @@ class A_star:
             if frontier.get(f)[2] < self.minimum and self.find_dict(explored,frontier.get(f)[1]):
                 #self.minimum = frontier[node][2]
                 self.minimum = frontier[f][2]"""
+        pos_list = list(self.frontier)
+        self.minimum = self.frontier.get(pos_list[0])[2]
         print("befor while...")
         while True:
             #print("in while...")
-            pos_list = list(frontier)
+            pos_list = list(self.frontier)
             #print(self.destination)
-            print("frontier" ,frontier)
+            print("frontier" ,self.frontier)
             print("explored" , explored)
             print(frontier_index)
             #if frontier[frontier_index][2] == self.minimum and explored :
-            if frontier.get(pos_list[frontier_index])[2] == self.minimum :
-                if self.first_time_expand:
-                    val = frontier.get(pos_list[frontier_index])
-                    explored.update({pos_list[frontier_index]: [val[0], val[1], val[2], val[3]]})
-                    frontier.pop(pos_list[frontier_index])
-                    self.first_time_expand = False
+            #if self.frontier.get(pos_list[frontier_index])[2] == self.minimum :
+            if self.first_time_expand:
+                val = self.frontier.get(pos_list[frontier_index])
+                explored.update({pos_list[frontier_index]: [val[0], val[1], val[2], val[3]]})
+                self.frontier.pop(pos_list[frontier_index])
+                self.first_time_expand = False
+                self.expand(list(explored)[-1])
+                break
+            #if explored[-1][0] == frontier[frontier_index][1]:
+            elif explored.get(list(explored)[-1])[1] != self.frontier.get(pos_list[frontier_index])[1]:
+                val = self.frontier.get(pos_list[frontier_index])
+                explored.update({pos_list[frontier_index]: [val[0], val[1], val[2], val[3]]})
+                self.frontier.pop(pos_list[frontier_index])
+                #if frontier[frontier_index][0] == self.destination:
+                if val[0] == self.destination:
+                    global dest_pos, dest_cost
+                    dest_pos, dest_cost = pos_list[frontier_index], val[2]
+                    #explored.append(frontier[frontier_index])
+                    break
+                else:
+                    #explored.append(frontier[frontier_index])
+                    #self.expand(explored[len(explored)-1][0])
+                    #print("second in expand...")
                     self.expand(list(explored)[-1])
                     break
-                #if explored[-1][0] == frontier[frontier_index][1]:
-                elif explored.get(list(explored)[-1])[1] != frontier.get(pos_list[frontier_index])[1]:
-                    val = frontier.get(pos_list[frontier_index])
-                    explored.update({pos_list[frontier_index]: [val[0], val[1], val[2], val[3]]})
-                    frontier.pop(pos_list[frontier_index])
-                    #if frontier[frontier_index][0] == self.destination:
-                    if val[0] == self.destination:
-                        global dest_pos, dest_cost
-                        dest_pos, dest_cost = pos_list[frontier_index], val[2]
-                        #explored.append(frontier[frontier_index])
-                        break
-                    else:
-                        #explored.append(frontier[frontier_index])
-                        #self.expand(explored[len(explored)-1][0])
-                        #print("second in expand...")
-                        self.expand(list(explored)[-1])
-                        break
-            frontier_index += 1
+            #frontier_index += 1
 
 
     def f_n(self, parent, parent_cost, position, goal_position):
