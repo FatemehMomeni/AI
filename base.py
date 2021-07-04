@@ -1,4 +1,4 @@
-"""import abc
+import abc
 import enum
 import socket
 import struct
@@ -97,9 +97,9 @@ class BaseAgent(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def do_turn(self, turn_data: TurnData) -> Action:
         pass
-"""
 
-import abc
+
+"""import abc
 import enum
 import socket
 import struct
@@ -179,3 +179,4 @@ class BaseAgent(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def do_turn(self, turn_data: TurnData) -> Action:
         pass
+"""
