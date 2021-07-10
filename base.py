@@ -3,6 +3,7 @@ import enum
 import socket
 import struct
 import dataclasses
+from typing import List
 
 
 def read_utf(connection: socket.socket):
@@ -29,13 +30,13 @@ class AgentData:
     carrying: int or None
     collected: list
     score: int
-    count_required: list[int]
+    count_required: List
 
 
 @dataclasses.dataclass
 class TurnData:
     turns_left: int
-    agent_data: list[AgentData]
+    agent_data: List
     map: list
 
 

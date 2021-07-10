@@ -63,42 +63,42 @@ class Minimax_algorithm:
         self.utility.clear()
         self.remained.clear()
         self.collected.clear()
-        pos = tuple()
-        par = tuple()
+        #pos = tuple()
+        #par = tuple()
         if parent == (-1, -1):
             for n in range(Minimax_tree.agent_num):
                 self.utility.append(0)
             self.remained = self.diamond_num
             self.collected = [[] for i in range(Minimax_tree.agent_num)]
-            pos = position
-            par = parent
+            #pos = position
+            #par = parent
         for color in range(len(self.diamond_num)):
-            if parent != (-1, -1):
-                self.utility, self.remained, self.collected = Minimax_tree.search(parent)
-            if self.remained[color] != 0 and self.remained[color] >= self.min_diamonds[level]:
-                if self.collected[level].count(color) > self.min_diamonds[level][color] or self.collected[level]\
-                        .count(color) + 1 == self.min_diamonds[level][color]:
-                    choose_color = 0
-                    if self.diamonds[color] > 1:
-                        choose_color = random.random(0, len(self.diamonds[color]))
+            for num_color in self.diamond_num[color]:
+                if parent != (-1, -1):
+                    self.utility, self.remained, self.collected = Minimax_tree.search(parent)
+                #if self.remained[color] != 0: #and self.remained[color] - self.collected[level].count(color) >= self.min_diamonds[color]:  # prunning
+                choose_color = 0
+                if self.diamonds[color] > 1:
+                    choose_color = random.random(0, len(self.diamonds[color]))
+                self.remained[color] -= 1
+                par = position
+                pos = self.diamonds[color][choose_color]
+                self.diamonds[color].pop(choose_color)
+                self.collected[level].append(color)
+                if self.collected[level].count(color) >= self.min_diamonds[level][color]:
                     self.utility[level] += self.diamond_scores[color]
-                    self.remained[color] -= 1
-                    par = position
-                    pos = self.diamonds[color][choose_color]
-                    self.diamonds[color].pop(choose_color)
-                    self.collected[level].append(color)
-            else:
-                self.stop = True
-        if not self.stop:
-            if level % Minimax_tree.agent_num == 3:
-                level = 0
-            else:
-                level = level + 1
-            node = Minimax_tree(self.utility, pos, par, level, self.remained, self.collected)
-            Minimax_tree.class_objects.append(node)
-            self.minimax(pos, par, level)
+                """else:
+                    self.stop = True
+                if not self.stop:"""
+                if level % Minimax_tree.agent_num == 3:
+                    level = 0
+                else:
+                    level = level + 1
+                node = Minimax_tree(self.utility, pos, par, level, self.remained, self.collected)
+                Minimax_tree.class_objects.append(node)
+                self.minimax(pos, par, level)
 
-        if par == pos == (-1, -1):
+        if parent == position == (-1, -1):
             return self.sequence()
 
         return
@@ -106,9 +106,9 @@ class Minimax_algorithm:
     def sequence(self):
         parent_children = dict()
         for obj in Minimax_tree.class_objects:
-            if parent_children[obj.parent_id] not in parent_children and parent_children[obj.parent_id] is not None:
+            if parent_children[obj.parent_id] not in parent_children and parent_children[obj.id] != (-1, -1):
                 parent_children[obj.parent_id] = [parent_children[obj.id]]
-            else:
+            elif parent_children[obj.id] != (-1, -1):
                 parent_children[obj.parent_id].append(parent_children[obj.id])
 
         self.find_best_child(parent_children, list(parent_children.values())[0])
