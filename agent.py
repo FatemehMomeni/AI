@@ -14,7 +14,6 @@ result = list()
 # PHASE 4
 diamond_pos_4 = {0: [], 1: [], 2: [], 3: [], 4: []}
 bases_pos_4 = {'a': [], 'b': [], 'c': [], 'd': []}
-agents_pos_4 = list()
 result_4 = list(list())
 agent_turn = 0
 
@@ -22,21 +21,22 @@ agent_turn = 0
 class Agent(BaseAgent):
 
     def do_turn(self, turn_data: TurnData) -> Action:
-        global turn_counter, diamond_pos, bases_pos, result, bases_cost, diamond_pos_4, bases_pos_4, agents_pos_4,\
+        global turn_counter, diamond_pos, bases_pos, result, bases_cost, diamond_pos_4, bases_pos_4,\
             agent_turn, result_4
 
         # ------------------------------------------ PHASE 4 ------------------------------------------
         if turn_counter == 0:
             for map_row in range(self.grid_size):
                 for map_column in range(self.grid_size):
+                    a = turn_data.map[map_row][map_column]
                     if re.match(r'\d', turn_data.map[map_row][map_column]):
-                        if turn_data.map[map_row][map_column] == 0:
+                        if turn_data.map[map_row][map_column] == '0':
                             diamond_pos_4[0].append((map_row, map_column))
-                        elif turn_data.map[map_row][map_column] == 1:
+                        elif turn_data.map[map_row][map_column] == '1':
                             diamond_pos_4[1].append((map_row, map_column))
-                        elif turn_data.map[map_row][map_column] == 2:
+                        elif turn_data.map[map_row][map_column] == '2':
                             diamond_pos_4[2].append((map_row, map_column))
-                        elif turn_data.map[map_row][map_column] == 3:
+                        elif turn_data.map[map_row][map_column] == '3':
                             diamond_pos_4[3].append((map_row, map_column))
                         else:
                             diamond_pos_4[4].append((map_row, map_column))
@@ -49,16 +49,15 @@ class Agent(BaseAgent):
                             bases_pos_4['c'].append((map_row, map_column))
                         else:
                             bases_pos_4['d'].append((map_row, map_column))
-                    elif re.match(r'[A-D]', turn_data.map[map_row][map_column]):
-                        agents_pos_4.append((map_row, map_column))
             turn_counter += 1
 
             sequence = list()
-            for num in range(len(agents_pos_4)):
-                sequence.append(Minimax_algorithm(diamond_pos_4, turn_data.agent_data[num].count_required, len(agents_pos_4)))
+            for num in range(len(turn_data.agent_data)):
+                sequence.append(Minimax_algorithm(diamond_pos_4, turn_data.agent_data[num].count_required,
+                                                  len(turn_data.agent_data)))
 
-            for agent in range(len(agents_pos_4)):
-                origin_pos = agents_pos_4[agent]
+            for agent in range(len(turn_data.agent_data)):
+                origin_pos = turn_data.agent_data[agent]
                 while sequence[agent].answer:
                     for diamond in sequence[agent].answer:
                         algorithm = A_star(self.grid_size, origin_pos, diamond, turn_data.map)
@@ -110,7 +109,7 @@ class Agent(BaseAgent):
 
         print(result_4)
         current_act = result_4[agent_turn].pop(0)
-        agent_turn = (agent_turn + 1) % len(agents_pos_4)
+        agent_turn = (agent_turn + 1) % len(turn_data.agent_data)
 
         if current_act == "UP":
             return Action.UP

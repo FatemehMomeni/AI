@@ -78,7 +78,7 @@ class Minimax_algorithm:
                     self.utility, self.remained, self.collected = Minimax_tree.search(parent)
                 #if self.remained[color] != 0: #and self.remained[color] - self.collected[level].count(color) >= self.min_diamonds[color]:  # prunning
                 choose_color = 0
-                if self.diamonds[color] > 1:
+                if len(self.diamonds[color]) > 1:
                     choose_color = random.random(0, len(self.diamonds[color]))
                 self.remained[color] -= 1
                 par = position
