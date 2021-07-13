@@ -51,29 +51,30 @@ class Agent(BaseAgent):
                             bases_pos_4['d'].append((map_row, map_column))
             turn_counter += 1
 
-            sequence = list()
-            for num in range(len(turn_data.agent_data)):
-                sequence.append(Minimax_algorithm(diamond_pos_4, turn_data.agent_data[num].count_required,
-                                                  len(turn_data.agent_data)))
-
+            num = -1
             for agent in range(len(turn_data.agent_data)):
-                origin_pos = turn_data.agent_data[agent]
-                while sequence[agent].answer:
-                    for diamond in sequence[agent].answer:
-                        algorithm = A_star(self.grid_size, origin_pos, diamond, turn_data.map)
-                        d_path, d_cost = algorithm.solution(origin_pos)
-                        for base in bases_pos:
-                            algorithm = A_star(self.grid_size, d_path, base, turn_data.map)
-                            b_path, b_cost = algorithm.solution(d_path)
-                            bases_cost[base] = [b_path, b_cost]
-                        min_base = min(bases_cost.keys(), key=lambda t: bases_cost[t][1])
-                        min_b_path = bases_cost[min_base][0]
-                        origin_pos = min_base
-                        result_4[agent].extend(t for t in d_path)
-                        result_4[agent].extend(t for t in min_b_path)
-                        sequence[agent].answer.remove(d_path)
-                        diamond_cost.clear()
-                        bases_cost.clear()
+                if turn_data.agent_data[agent].name == self.name:
+                    num = agent
+                    break
+            sequence = Minimax_algorithm(diamond_pos_4, turn_data.agent_data[num].count_required, len(turn_data.agent_data))
+
+            origin_pos = turn_data.agent_data[num]
+            while sequence.answer:
+                for diamond in sequence.answer:
+                    algorithm = A_star(self.grid_size, origin_pos, diamond, turn_data.map)
+                    d_path, d_cost = algorithm.solution(origin_pos)
+                    for base in bases_pos:
+                        algorithm = A_star(self.grid_size, d_path, base, turn_data.map)
+                        b_path, b_cost = algorithm.solution(d_path)
+                        bases_cost[base] = [b_path, b_cost]
+                    min_base = min(bases_cost.keys(), key=lambda t: bases_cost[t][1])
+                    min_b_path = bases_cost[min_base][0]
+                    origin_pos = min_base
+                    result_4[num].extend(t for t in d_path)
+                    result_4[num].extend(t for t in min_b_path)
+                    sequence.answer.remove(d_path)
+                    diamond_cost.clear()
+                    bases_cost.clear()
         # ------------------------------------------ PHASE 4 ------------------------------------------
 
         """if turn_counter == 0:

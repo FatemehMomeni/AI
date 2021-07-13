@@ -63,15 +63,12 @@ class Minimax_algorithm:
         self.utility.clear()
         self.remained.clear()
         self.collected.clear()
-        #pos = tuple()
-        #par = tuple()
+
         if parent == (-1, -1):
             for n in range(Minimax_tree.agent_num):
                 self.utility.append(0)
             self.remained = self.diamond_num
             self.collected = [[] for i in range(Minimax_tree.agent_num)]
-            #pos = position
-            #par = parent
         for color in range(len(self.diamond_num)):
             for num_color in self.diamond_num[color]:
                 if parent != (-1, -1):
