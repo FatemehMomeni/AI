@@ -13,7 +13,7 @@ result = list()
 
 # PHASE 4
 diamond_pos_4 = {0: [], 1: [], 2: [], 3: [], 4: []}
-bases_pos_4 = {'a': [], 'b': [], 'c': [], 'd': []}
+bases_pos_4 = {0: [], 1: [], 2: [], 3: []}
 required = dict()
 result_4 = list()
 pos_A = tuple()
@@ -22,7 +22,7 @@ pos_A = tuple()
 class Agent(BaseAgent):
 
     def do_turn(self, turn_data: TurnData) -> Action:
-        global turn_counter, diamond_pos_4, bases_pos_4, result_4, required, pos_A
+        global turn_counter, diamond_pos_4, bases_pos_4, result_4, required, pos_A, bases_pos
 
         # ------------------------------------------ PHASE 4 ------------------------------------------
         if turn_counter == 0:  # first time
@@ -41,13 +41,13 @@ class Agent(BaseAgent):
                             diamond_pos_4.setdefault(4, []).append((map_row, map_column))
                     elif re.match(r'[a-d]', turn_data.map[map_row][map_column]):
                         if turn_data.map[map_row][map_column] == 'a':
-                            bases_pos_4.setdefault('a', []).append((map_row, map_column))
+                            bases_pos_4.setdefault(0, []).append((map_row, map_column))
                         elif turn_data.map[map_row][map_column] == 'b':
-                            bases_pos_4.setdefault('b', []).append((map_row, map_column))
+                            bases_pos_4.setdefault(1, []).append((map_row, map_column))
                         elif turn_data.map[map_row][map_column] == 'c':
-                            bases_pos_4.setdefault('c', []).append((map_row, map_column))
+                            bases_pos_4.setdefault(2, []).append((map_row, map_column))
                         else:
-                            bases_pos_4.setdefault('d', []).append((map_row, map_column))
+                            bases_pos_4.setdefault(3, []).append((map_row, map_column))
             turn_counter += 1
 
             for agent in range(len(turn_data.agent_data)):
@@ -68,6 +68,7 @@ class Agent(BaseAgent):
             for i in range(len(turn_data.agent_data)):
                 if turn_data.agent_data[i].name == self.name:
                     agent_num = i
+                    bases_pos = bases_pos_4[i]
                     break
 
             my_diamonds = list()
@@ -81,15 +82,15 @@ class Agent(BaseAgent):
                 algorithm = A_star(self.grid_size, origin_pos, diamond, turn_data.map)
                 d_path, d_cost = algorithm.solution(origin_pos)
                 for base in bases_pos:
-                    algorithm = A_star(self.grid_size, d_path, base, turn_data.map)
-                    b_path, b_cost = algorithm.solution(d_path)
+                    algorithm = A_star(self.grid_size, diamond, base, turn_data.map)
+                    b_path, b_cost = algorithm.solution(diamond)
                     bases_cost[base] = [b_path, b_cost]
                 min_base = min(bases_cost.keys(), key=lambda t: bases_cost[t][1])
                 min_b_path = bases_cost[min_base][0]
                 origin_pos = min_base
                 result_4.extend(t for t in d_path)
                 result_4.extend(t for t in min_b_path)
-                sequence.answer.remove(d_path)
+                my_diamonds.remove(diamond)
                 diamond_cost.clear()
                 bases_cost.clear()
         # ------------------------------------------ PHASE 4 ------------------------------------------
