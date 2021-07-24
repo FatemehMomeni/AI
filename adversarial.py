@@ -89,8 +89,6 @@ class Minimax_algorithm:
             if parent == (-1, -1):
                 self.collected = [{0: [], 1: [], 2: [], 3: [], 4: []} for _ in range(self.agent_num)]
                 self.utility = [0 for _ in range(self.agent_num)]
-                #tree_container[((-1, -1), -1)] = [Minimax_tree(position, (-1, -1), self.unique, turn,
-                                                               #self.agent_num, self.utility, self.collected)]
             elif color == 0:
                 self.collected, self.utility = Minimax_tree.search_collected_utility(position, parent, par_turn)
                 real_collected = deepcopy(self.collected)
@@ -121,10 +119,6 @@ class Minimax_algorithm:
                 pos = current_diamonds[color][color_num]
                 children_pos.extend([[pos, current]])
                 par = position
-
-                """print('pos', pos, 'par', par, 'collected', self.collected, 'unique', self.unique, 'par_unique', par_unique,
-                      'utility', self.utility, 'turn', turn, '\n---------------------------------------------------')"""
-
                 self.unique += 1
                 node = Minimax_tree(pos, par, self.unique, turn, self.agent_num, self.utility, self.collected)
                 tree_container.setdefault(par_unique, []).append(node)

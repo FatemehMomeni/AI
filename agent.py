@@ -1,3 +1,5 @@
+import random
+
 from base import BaseAgent, TurnData, Action
 from tree import A_star
 from adversarial import Minimax_algorithm
@@ -23,6 +25,7 @@ class Agent(BaseAgent):
 
     def do_turn(self, turn_data: TurnData) -> Action:
         global turn_counter, diamond_pos_4, bases_pos_4, result_4, required, pos_A, bases_pos
+        agent_num = 0
 
         # ------------------------------------------ PHASE 4 ------------------------------------------
         if turn_counter == 0:  # first time
@@ -64,7 +67,6 @@ class Agent(BaseAgent):
             sequence = Minimax_algorithm(diamond_pos_4, required, pos_A)
 
             all_agents = len(turn_data.agent_data)
-            agent_num = 0
             for i in range(len(turn_data.agent_data)):
                 if turn_data.agent_data[i].name == self.name:
                     agent_num = i
@@ -90,11 +92,11 @@ class Agent(BaseAgent):
                 origin_pos = min_base
                 result_4.extend(t for t in d_path)
                 result_4.extend(t for t in min_b_path)
-                my_diamonds.remove(diamond)
                 diamond_cost.clear()
                 bases_cost.clear()
         # ------------------------------------------ PHASE 4 ------------------------------------------
 
+        # ------------------------------------------ PHASE 2 ------------------------------------------
         """if turn_counter == 0:
             for map_row in range(self.grid_size):
                 for map_column in range(self.grid_size):
@@ -124,9 +126,27 @@ class Agent(BaseAgent):
                     diamond_pos.remove(min_diamond)
                     diamond_cost.clear()
                     bases_cost.clear()"""
+        # ------------------------------------------ PHASE 2 ------------------------------------------
 
-        print(result_4)
-        current_act = result_4.pop(0)
+        if result_4:
+            current_act = result_4.pop(0)
+        else:
+            agent_position = turn_data.agent_data[agent_num].position
+
+            if agent_position[0] > 0 and turn_data.map[agent_position[0] - 1][agent_position[1]] != '*' \
+                    and not re.match(r'\d', turn_data.map[agent_position[0]-1][agent_position[1]]):
+                current_act = "UP"
+            elif agent_position[0] < self.grid_size and turn_data.map[agent_position[0] + 1][agent_position[1]] != '*' \
+                    and not re.match(r'\d', turn_data.map[agent_position[0]+1][agent_position[1]]):
+                current_act = "DOWN"
+            elif agent_position[1] > 0 and turn_data.map[agent_position[0]][agent_position[1] - 1] != '*' \
+                    and not re.match(r'\d', turn_data.map[agent_position[0]][agent_position[1]-1]):
+                current_act = "LEFT"
+            elif agent_position[1] < self.grid_size and turn_data.map[agent_position[0]][agent_position[1] + 1] != '*' \
+                    and not re.match(r'\d', turn_data.map[agent_position[0]][agent_position[1]+1]):
+                current_act = "RIGHT"
+            else:
+                current_act = None
 
         if current_act == "UP":
             return Action.UP
@@ -136,7 +156,7 @@ class Agent(BaseAgent):
             return Action.LEFT
         elif current_act == "RIGHT":
             return Action.RIGHT
-        # return random.choice(list(Action))
+        #return random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
 
 
 if __name__ == '__main__':

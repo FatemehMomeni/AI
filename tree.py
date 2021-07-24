@@ -82,7 +82,7 @@ class A_star:
                 self.first_time_expand = False
                 self.expand(list(self.explored)[-1])
                 break
-            #elif self.explored.get(list(self.explored)[-1])[1] != self.frontier.get(pos_list[frontier_index])[1]:
+            # elif self.explored.get(list(self.explored)[-1])[1] != self.frontier.get(pos_list[frontier_index])[1]:
             else:
                 val = self.frontier.get(pos_list[frontier_index])
                 self.explored.update({pos_list[frontier_index]: [val[0], val[1], val[2], val[3]]})
@@ -95,7 +95,7 @@ class A_star:
                     self.expand(list(self.explored)[-1])
                     break
 
-            #frontier_index += 1
+            # frontier_index += 1
 
     def f_n(self, parent, parent_cost, position, goal_position):
         if not parent:
