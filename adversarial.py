@@ -72,34 +72,36 @@ class Minimax_algorithm:
         self.diamonds = diamonds
         p = [len(self.diamonds[d]) for d in self.diamonds]
         self.diamond_num.extend(p)  # number of each color diamond
-        self.answer = self.minimax(pos_A, (-1, -1), 0, self.diamonds)
+        self.answer = self.minimax(pos_A, (-1, -1), 0, self.diamonds,False)
 
-    def minimax(self, position: tuple, parent: tuple, turn: int, current_diamonds: dict):
+    def minimax(self, position: tuple, parent: tuple, turn: int, current_diamonds: dict,first_child: bool):
         pos = par = tuple()
         children_pos = list()
         real_collected = dict()
         real_utility = list()
 
         for color in range(len(self.diamond_num)):
-            par_unique = 0
-            if turn != 0:
-                par_turn = turn - 1
-            else:
-                par_turn = self.agent_num - 1
-            if parent == (-1, -1):
-                self.collected = [{0: [], 1: [], 2: [], 3: [], 4: []} for _ in range(self.agent_num)]
-                self.utility = [0 for _ in range(self.agent_num)]
-            elif color == 0:
-                self.collected, self.utility = Minimax_tree.search_collected_utility(position, parent, par_turn)
-                real_collected = deepcopy(self.collected)
-                real_utility = deepcopy(self.utility)
-            else:
-                self.collected = deepcopy(real_collected)
-                self.utility = deepcopy(real_utility)
-            if len(current_diamonds[color]) != 0:
+            color_num = 0
+            while len(current_diamonds[color]) > color_num and len(current_diamonds[color]) != 0:
+                par_unique = 0
+                if turn != 0:
+                    par_turn = turn - 1
+                else:
+                    par_turn = self.agent_num - 1
+                if parent == (-1, -1):
+                    self.collected = [{0: [], 1: [], 2: [], 3: [], 4: []} for _ in range(self.agent_num)]
+                    self.utility = [0 for _ in range(self.agent_num)]
+                elif first_child:
+                    self.collected, self.utility = Minimax_tree.search_collected_utility(position, parent, par_turn)
+                    real_collected = deepcopy(self.collected)
+                    real_utility = deepcopy(self.utility)
+                else:
+                    self.collected = deepcopy(real_collected)
+                    self.utility = deepcopy(real_utility)
+
                 if parent != (-1, -1):
                     par_unique = Minimax_tree.search_unique(position, parent, par_turn)
-                color_num = random.randint(0, len(current_diamonds[color])-1)
+                #color_num = random.randint(0, len(current_diamonds[color])-1)
                 self.collected[turn][color].append(current_diamonds[color][color_num])
                 if len(self.collected[turn][color]) >= self.min_required[turn][color]:
                     self.utility[turn] += self.diamond_scores[color]
@@ -117,19 +119,29 @@ class Minimax_algorithm:
                                 current[k].append(v[i])
 
                 pos = current_diamonds[color][color_num]
-                children_pos.extend([[pos, current]])
+                if not children_pos:
+                    first_child = True
+                else:
+                    first_child = False
+                children_pos.extend([[pos, current,first_child]])
                 par = position
                 self.unique += 1
                 node = Minimax_tree(pos, par, self.unique, turn, self.agent_num, self.utility, self.collected)
                 tree_container.setdefault(par_unique, []).append(node)
-
-        if turn % self.agent_num == self.agent_num - 1:
-            turn = 0
-        else:
-            turn += 1
+                color_num += 1
+                print("uniq", self.unique)
+                print("turn",turn)
+                print("pos", pos)
+                print("par", par)
+                print("********************************************************************")
+        print("children_pos",children_pos)
         for c in children_pos:
-            self.minimax(c[0], par, turn, c[1])
-
+            if turn % self.agent_num == self.agent_num - 1:
+                turn = 0
+            else:
+                turn += 1
+            self.minimax(c[0], par, turn, c[1],c[2])
+        
         if parent == (-1, -1):
             return self.sequence()
         return
