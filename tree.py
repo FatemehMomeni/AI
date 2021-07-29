@@ -14,7 +14,7 @@ dest_cost = -1
 
 class A_star:
 
-    def __init__(self, grid_size, position, goal_position, mapp):
+    def __init__(self, grid_size, position, goal_position, mapp, others_diamonds):
         self.grid_size = grid_size
         self.position = self.agent_pos = position
         self.destination = goal_position
@@ -27,6 +27,10 @@ class A_star:
         self.min_index = 0
         self.first_time_expand = True
         self.first_add_to_frontier = True
+
+        # -----------------------------------------------------------------------------
+        self.others_diamonds = others_diamonds
+        # -----------------------------------------------------------------------------
 
     def expand(self, pos):
         flag = True
@@ -49,6 +53,12 @@ class A_star:
                 actions["LEFT"] = (-1, -1)
             elif pos[1] == self.grid_size - 1:
                 actions["RIGHT"] = (-1, -1)
+
+            # -----------------------------------------------------------------------------
+            for path_pos in actions:
+                if actions[path_pos] in self.others_diamonds:
+                    actions[path_pos] = (-1, -1)
+            # -----------------------------------------------------------------------------
 
             for act_key in actions:
                 explored_flag = False
