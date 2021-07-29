@@ -29,14 +29,14 @@ class Agent(BaseAgent):
                    "LEFT": (pos[0], pos[1] - 1), "RIGHT": (pos[0], pos[1] + 1)}
         return actions[act]
 
-    """def random_action(self, act, new_pos, turn_data, others_pos, agent_num):
+    def random_action(self, act, new_pos, turn_data, others_pos, agent_num):
         while not(0 <= new_pos[0] < self.grid_size and 0 <= new_pos[1] < self.grid_size and
                   turn_data.map[new_pos[0]][new_pos[1]] != '*' and
                   turn_data.map[new_pos[0]][new_pos[1]] not in others_pos
-                  and not re.match(r'\d', turn_data.map[new_pos[0] - 1][new_pos[1]])):
+                  and not re.match(r'\d', turn_data.map[new_pos[0]][new_pos[1]])):
             act = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
             new_pos = self.pos_of_action(turn_data.agent_data[agent_num].position, act)
-        return act"""
+        return act
 
     def do_turn(self, turn_data: TurnData) -> Action:
         global turn_counter, diamond_pos_4, bases_pos_4, result_4, required, pos_A, bases_pos
@@ -156,7 +156,7 @@ class Agent(BaseAgent):
                     turn_data.agent_data[agent_num].count_required[current_color]:
                 turn_data.agent_data[agent_num].score += diamond_scores[current_color]
 
-        """others_pos = list()
+        others_pos = list()
         for a in range(len(turn_data.agent_data)):
             if a != agent_num:
                 others_pos.append(turn_data.agent_data[a].position)
@@ -169,9 +169,9 @@ class Agent(BaseAgent):
         else:
             current_act = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
             new_pos = self.pos_of_action(turn_data.agent_data[agent_num].position, current_act)
-            current_act = self.random_action(current_act, new_pos, turn_data, others_pos, agent_num)"""
+            current_act = self.random_action(current_act, new_pos, turn_data, others_pos, agent_num)
 
-        others_pos = list()
+        """others_pos = list()
         for a in range(len(turn_data.agent_data)):
             if a != agent_num:
                 others_pos.append(turn_data.agent_data[a].position)
@@ -190,7 +190,7 @@ class Agent(BaseAgent):
                 current_act = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
                 new_pos = self.pos_of_action(turn_data.agent_data[agent_num].position, current_act)
         else:
-            current_act = None
+            current_act = None"""
 
         if current_act == "UP":
             return Action.UP
