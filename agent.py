@@ -30,10 +30,9 @@ class Agent(BaseAgent):
         return actions[act]
 
     def random_action(self, act, new_pos, turn_data, others_pos, agent_num):
-        while not(0 <= new_pos[0] < self.grid_size and 0 <= new_pos[1] < self.grid_size and
-                  turn_data.map[new_pos[0]][new_pos[1]] != '*' and
-                  turn_data.map[new_pos[0]][new_pos[1]] not in others_pos
-                  and not re.match(r'\d', turn_data.map[new_pos[0]][new_pos[1]])):
+        while new_pos[0] < 0 or new_pos[1] < 0 or new_pos[0] >= self.grid_size or new_pos[1] >= self.grid_size\
+                or turn_data.map[new_pos[0]][new_pos[1]] == '*' or new_pos in others_pos\
+                or re.match(r'\d', turn_data.map[new_pos[0]][new_pos[1]]):
             act = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
             new_pos = self.pos_of_action(turn_data.agent_data[agent_num].position, act)
         return act
@@ -166,6 +165,14 @@ class Agent(BaseAgent):
             if new_pos in others_pos:
                 result_4.insert(0, current_act)
                 current_act = self.random_action(current_act, new_pos, turn_data, others_pos, agent_num)
+                if current_act == "UP":
+                    result_4.insert(0, "DOWN")
+                elif current_act == "DOWN":
+                    result_4.insert(0, "UP")
+                elif current_act == "LEFT":
+                    result_4.insert(0, "RIGHT")
+                else:
+                    result_4.insert(0, "LEFT")
         else:
             current_act = random.choice(["UP", "DOWN", "LEFT", "RIGHT"])
             new_pos = self.pos_of_action(turn_data.agent_data[agent_num].position, current_act)

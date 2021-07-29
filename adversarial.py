@@ -67,6 +67,9 @@ class Minimax_algorithm:
     def __init__(self, diamonds: list, min_required: dict):
         self.min_required = min_required
         self.agent_num = len(list(self.min_required))
+        self.second_constraint = list()
+        p = [[] for _ in range(self.agent_num)]
+        self.second_constraint.extend(p)
         self.answer = self.minimax(0, diamonds, 0)
 
     def minimax(self, turn: int, current_diamonds: list, par_unique: int):
@@ -74,6 +77,7 @@ class Minimax_algorithm:
         # turn belongs to agent who is going to move
 
         for diamond in current_diamonds:
+            won = False
             if par_unique == 0:
                 collected = [[] for _ in range(self.agent_num)]
                 utility = [0 for _ in range(self.agent_num)]
@@ -83,13 +87,24 @@ class Minimax_algorithm:
             my_collected = deepcopy(collected)
             my_utility = deepcopy(utility)
             my_collected[parent_turn].append(diamond)
+
+            if diamond[1] in self.second_constraint[parent_turn]:
+                self.second_constraint[parent_turn].clear()
+            else:
+                if len(self.second_constraint[parent_turn]) == 4:
+                    won = True
+            self.second_constraint[parent_turn].append(diamond[1])
+
             mine = 0
             for agent in my_collected:
                 for dia in agent:
                     if dia[1] == diamond[1]:
                         mine += 1
-            if mine >= self.min_required[parent_turn][diamond[1]]:
-                my_utility[parent_turn] += self.diamond_scores[diamond[1]]
+            if not won:
+                if mine >= self.min_required[parent_turn][diamond[1]]:
+                    my_utility[parent_turn] += self.diamond_scores[diamond[1]]
+            else:
+                my_utility[parent_turn] += 100
 
             locals()
             self.current = deepcopy(current_diamonds)
