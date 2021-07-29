@@ -6,9 +6,9 @@
         self.action = action
 """
 from typing import Dict, Any
+import re
 
 path = list()
-dest_pos = tuple()
 dest_cost = -1
 
 
@@ -88,8 +88,8 @@ class A_star:
                 self.explored.update({pos_list[frontier_index]: [val[0], val[1], val[2], val[3]]})
                 self.frontier.pop(pos_list[frontier_index])
                 if val[0] == self.destination:
-                    global dest_pos, dest_cost
-                    dest_pos, dest_cost = pos_list[0], val[2]
+                    global dest_cost
+                    dest_cost = val[2]
                     break
                 else:
                     self.expand(list(self.explored)[-1])
@@ -107,7 +107,7 @@ class A_star:
         return g_n + h_n
 
     def solution(self, pos):
-        global dest_pos, dest_cost
+        global dest_cost
         self.expand(pos)
         key = list(self.explored)[1:]
         dest = list(self.explored)[-1]
@@ -117,5 +117,3 @@ class A_star:
             path.append(self.explored.get(dest)[3])
             dest = self.explored.get(dest)[1]
         return list(reversed(path)), dest_cost
-
-
