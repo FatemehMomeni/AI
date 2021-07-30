@@ -7,7 +7,7 @@ child_list = list()
 
 class Minimax_tree:
 
-    def __init__(self, id, unique, turn: int, agent_num, utility, collect):
+    def __init__(self, id, unique, turn: int, agent_num, utility, collect, second_constraint):
         # collect: collected diamond for each agent
         self.agent_num = agent_num
         self.id = id
@@ -17,6 +17,7 @@ class Minimax_tree:
         self.agents_collected = [[] for _ in range(self.agent_num)]
         for arg in range(len(collect)):
             self.agents_collected[arg] = collect[arg]
+        self.second_constraint = second_constraint
 
     @staticmethod
     def search_unique(id, parent_id, turn):
@@ -31,7 +32,7 @@ class Minimax_tree:
         for obj in tree_container.values():
             for v in obj:
                 if v.unique == unique:
-                    return v.agents_collected, v.utility, v.turn
+                    return v.agents_collected, v.utility, v.turn, v.second_constraint
         return None
 
     @staticmethod
@@ -68,8 +69,6 @@ class Minimax_algorithm:
         self.min_required = min_required
         self.agent_num = len(list(self.min_required))
         self.second_constraint = list()
-        p = [[] for _ in range(self.agent_num)]
-        self.second_constraint.extend(p)
         self.answer = self.minimax(0, diamonds, 0)
 
     def minimax(self, turn: int, current_diamonds: list, par_unique: int):
@@ -82,18 +81,20 @@ class Minimax_algorithm:
                 collected = [[] for _ in range(self.agent_num)]
                 utility = [0 for _ in range(self.agent_num)]
                 parent_turn = 0
+                second_constraint = [[] for _ in range(self.agent_num)]
             else:
-                collected, utility, parent_turn = Minimax_tree.search_collected_utility(par_unique)
+                collected, utility, parent_turn, second_constraint = Minimax_tree.search_collected_utility(par_unique)
             my_collected = deepcopy(collected)
             my_utility = deepcopy(utility)
+            my_second_constraint = deepcopy(second_constraint)
             my_collected[parent_turn].append(diamond)
 
-            if diamond[1] in self.second_constraint[parent_turn]:
-                self.second_constraint[parent_turn].clear()
+            if diamond[1] in my_second_constraint[parent_turn]:
+                my_second_constraint[parent_turn].clear()
             else:
-                if len(self.second_constraint[parent_turn]) == 4:
+                if len(my_second_constraint[parent_turn]) == 4:
                     won = True
-            self.second_constraint[parent_turn].append(diamond[1])
+            my_second_constraint[parent_turn].append(diamond[1])
 
             mine = 0
             for agent in my_collected:
@@ -105,6 +106,7 @@ class Minimax_algorithm:
                     my_utility[parent_turn] += self.diamond_scores[diamond[1]]
             else:
                 my_utility[parent_turn] += 100
+                won = True
 
             locals()
             self.current = deepcopy(current_diamonds)
@@ -118,9 +120,10 @@ class Minimax_algorithm:
             else:
                 turn = 0
 
-            node = Minimax_tree(diamond[0], self.unique, turn, self.agent_num, my_utility, my_collected)
+            node = Minimax_tree(diamond[0], self.unique, turn, self.agent_num, my_utility, my_collected, my_second_constraint)
             tree_container.setdefault(par_unique, []).append(node)
-            child_list.append((self.unique, self.current))
+            if not won:
+                child_list.append((self.unique, self.current))
             self.unique += 1
 
         if child_list:
