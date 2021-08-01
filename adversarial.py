@@ -99,14 +99,14 @@ class Minimax_algorithm:
             mine = 0
             for agent in my_collected:
                 for dia in agent:
-                    if dia[1] == diamond[1]:
+                    if dia[1] == diamond[1]:  # diamond color
                         mine += 1
             if not won:
                 if mine >= self.min_required[parent_turn][diamond[1]]:
                     my_utility[parent_turn] += self.diamond_scores[diamond[1]]
             else:
                 my_utility[parent_turn] += 100
-                won = True
+                #won = True
 
             locals()
             self.current = deepcopy(current_diamonds)
@@ -138,7 +138,7 @@ class Minimax_algorithm:
         self.find_best_child(0, tree_container.get(0))
         sequence = list()
         path = 0
-        while path in tree_container:
+        while path in tree_container:  # not leaves
             sequence.append(tree_container[path][0].unique)
             path = tree_container[path][0].unique
 
@@ -157,10 +157,10 @@ class Minimax_algorithm:
             utility_vector = child.utility
             if parent:
                 turn = Minimax_tree.search_turn(parent)
-                if turn != self.agent_num - 1:
+                """ if turn != self.agent_num - 1:
                     turn += 1
                 else:
-                    turn = 0
+                    turn = 0"""
             else:
                 turn = 0
             if utility_vector[turn] > maximum:
